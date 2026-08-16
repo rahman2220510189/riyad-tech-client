@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The favicon is the wordmark's initial on the CTA colour: one letter, one
+       shape, legible at 16px where anything more becomes a smudge. -->
+  <rect width="32" height="32" rx="5" fill="#1F4D45"/>
+  <path d="M9 8.5h7.4c2.7 0 4.3 1.5 4.3 3.9 0 1.8-.9 3-2.5 3.5l3 7.6h-3.5l-2.6-7h-2.9v7H9V8.5Zm3.2 2.7v4h3.7c1.2 0 1.9-.7 1.9-2s-.7-2-1.9-2h-3.7Z" fill="#F4F5F0"/>
+</svg>

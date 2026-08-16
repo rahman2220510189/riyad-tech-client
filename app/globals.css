@@ -1,26 +1,377 @@
 @import "tailwindcss";
 
+/* ============================================================
+   1. TOKENS
+   Every colour on this site is one of these eight. No others.
+   ============================================================ */
+
+@theme {
+  --color-ink: #131a19;
+  --color-ink-soft: #3a4443;
+  /* Nudged two steps darker than the original #6E7A77, which measured 4.07
+     against --paper and so failed AA for the captions and labels it is used
+     on everywhere. This clears 4.5 on both paper and paper-lift and is
+     indistinguishable to the eye. */
+  --color-muted: #666f6c;
+  --color-paper: #f4f5f0;
+  --color-paper-lift: #fbfbf8;
+  --color-rule: #dce0d8;
+  --color-marker: #ffd84d;
+  --color-depth: #1f4d45;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-card: 4px;
+  --radius-btn: 2px;
+
+  --shadow-lift: 0 1px 2px rgba(19, 26, 25, 0.06);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Spec-literal aliases, so raw CSS can say var(--ink) as written in §3.2 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: var(--color-ink);
+  --ink-soft: var(--color-ink-soft);
+  --muted: var(--color-muted);
+  --paper: var(--color-paper);
+  --paper-lift: var(--color-paper-lift);
+  --rule: var(--color-rule);
+  --marker: var(--color-marker);
+  --depth: var(--color-depth);
+
+  /* 8px vertical rhythm */
+  --pad-section: 96px;
+  --gutter: 48px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --pad-section: 64px;
+    --gutter: 24px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   2. BASE
+   ============================================================ */
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+
+    /* §3.4 — 32px graph paper at 3%, texture only */
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--ink) 3%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--ink) 3%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--marker);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--depth);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Dark bands invert the focus ring so it stays visible */
+  .on-depth :focus-visible {
+    outline-color: var(--marker);
+  }
+}
+
+/* ============================================================
+   3. PRIMITIVES
+   ============================================================ */
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .band {
+    padding-block: var(--pad-section);
+  }
+
+  /* Sections are divided by a 1px rule, never by whitespace alone (§3.4) */
+  .band-ruled {
+    border-top: 1px solid var(--rule);
+  }
+
+  /* --- type scale (§3.3) --- */
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .h-hero {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+
+  .h-section {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .h-card {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .caption {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-variant-ligatures: none;
+  }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* §3.3 — body never exceeds 68 characters per line */
+  .measure {
+    max-width: 68ch;
+  }
+
+  /* --- surfaces --- */
+
+  .card {
+    background-color: var(--paper-lift);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-lift);
+    /* §3.4 — grid texture is removed inside cards */
+    background-image: none;
+    transition: border-color 150ms ease;
+  }
+
+  .card-hover:hover {
+    border-color: var(--ink);
+  }
+
+  /* --- the marker (§3.2) ---
+     A pen stroke: rotated, overshooting its box, softened corners.
+     Never a button fill, never a gradient, never text colour. */
+
+  .marker {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    white-space: nowrap;
+  }
+
+  .marker::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -0.09em;
+    right: -0.12em;
+    top: 0.15em;
+    bottom: 0.03em;
+    background-color: var(--marker);
+    /* Four unequal corners, in em, so the stroke keeps its shape at any size */
+    border-radius: 0.1em 0.24em 0.12em 0.28em / 0.55em 0.35em 0.6em 0.4em;
+    transform: rotate(-0.4deg);
+    transform-origin: left center;
+  }
+
+  /* Driven by data-on from ExtractionDemo, one field at a time */
+  .marker-field::before {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 220ms var(--ease-out-soft);
+  }
+
+  .marker-field[data-on="true"]::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Animated variant — used once, on the hero word */
+  .marker-draw::before {
+    animation: marker-sweep 500ms var(--ease-out-soft) 700ms both;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    color: var(--ink);
+    background-color: var(--marker);
+    border-radius: 2px 4px 3px 5px;
+    transform: rotate(-0.4deg);
+  }
+}
+
+/* ============================================================
+   4. MOTION (§3.5)
+   ============================================================ */
+
+@keyframes marker-sweep {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* The demo's extraction animation — the only elaborate motion on the page */
+@keyframes demo-scan {
+  from {
+    top: 0;
+    opacity: 1;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes demo-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page load: fade up 12px, staggered 60ms, 400ms ease-out. Once only. */
+.load-in {
+  animation: fade-up 400ms var(--ease-out-soft) both;
+}
+
+.load-in-1 { animation-delay: 0ms; }
+.load-in-2 { animation-delay: 60ms; }
+.load-in-3 { animation-delay: 120ms; }
+.load-in-4 { animation-delay: 180ms; }
+.load-in-5 { animation-delay: 240ms; }
+.load-in-6 { animation-delay: 300ms; }
+
+/* Scroll reveal: driven by IntersectionObserver in ui/Reveal.tsx */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 300ms ease-out,
+    transform 300ms ease-out;
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .marker-draw::before,
+  .marker-field::before {
+    clip-path: inset(0 0 0 0);
+    transition: none;
+  }
 }
