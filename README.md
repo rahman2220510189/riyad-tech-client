@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# riyad-tech
 
-## Getting Started
+The public site. Next.js 15, TypeScript, Tailwind v4.
 
-First, run the development server:
+Every page is static. Content comes from `riyad-api` at build time and is
+rebuilt when the admin panel saves something — so a visitor is served a file,
+and **the site stays up even when the API is down**. It simply stops showing
+new edits, which is the correct failure mode for a marketing site.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.local.example .env.local
+npm run dev          # http://localhost:3000
+npm run typecheck
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With `API_URL` empty the site builds from `content/site.ts` alone. That is not
+a fallback bolted on later — it is how the site was built, and it is why
+Vercel can deploy it before the API exists.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | What it does |
+| --- | --- |
+| `API_URL` | Where riyad-api is, read at build time only |
+| `NEXT_PUBLIC_API_URL` | Same address, read in the browser by the forms and the portal |
+| `NEXT_PUBLIC_SITE_URL` | This site's own address, used in the sitemap and metadata |
+| `REVALIDATE_SECRET` | Must match the value in riyad-api, or saving in the admin will not refresh the site |
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/            routes; every page a server component
+components/     sections of the site
+components/ui/  primitives with no content of their own
+content/site.ts every string that is not in the database
+lib/api.ts      the only file that knows riyad-api exists
+lib/portal.ts   the browser's connection for the customer portal
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Conventions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Colour comes only from the eight tokens in `app/globals.css`. No others.
+- `--marker` is a highlight background, never text and never a button fill —
+  it fails contrast on `--paper`.
+- No animation library. CSS transitions and one IntersectionObserver.
+- Content that lives in the database is passed down as props; components never
+  reach for it themselves.
