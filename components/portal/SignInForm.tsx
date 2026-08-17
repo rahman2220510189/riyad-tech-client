@@ -12,7 +12,7 @@ import { usePortalAuth } from "./PortalAuth";
  * to make on arrival. A single toggle keeps the whole thing to one screen,
  * which matters most on a phone.
  */
-export function SignInForm() {
+export function SignInForm({ onForgot }: { onForgot: () => void }) {
   const { setCustomer } = usePortalAuth();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [busy, setBusy] = useState(false);
@@ -108,6 +108,18 @@ export function SignInForm() {
                 ? "Sign in"
                 : "Create account"}
           </Button>
+
+          {mode === "in" && (
+            <p className="caption text-center">
+              <button
+                type="button"
+                onClick={onForgot}
+                className="text-muted transition-colors duration-150 hover:text-ink"
+              >
+                Forgotten your password?
+              </button>
+            </p>
+          )}
         </form>
       </div>
 

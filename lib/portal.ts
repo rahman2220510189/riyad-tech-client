@@ -110,6 +110,29 @@ export const portal = {
 
   unread: () => request<{ unread: number }>("/account/unread"),
 
+  forgot: (email: string) =>
+    request<{ ok: true; message: string }>("/account/forgot", {
+      method: "POST",
+      body: { email },
+    }),
+
+  /* Checked when the reset page loads, so a dead link says so before the
+     visitor types a new password twice. */
+  checkReset: (token: string) =>
+    request<{ ok: true }>(`/account/reset/${encodeURIComponent(token)}`),
+
+  reset: (token: string, password: string) =>
+    request<{ ok: true }>("/account/reset", {
+      method: "POST",
+      body: { token, password },
+    }),
+
+  changePassword: (current: string, password: string) =>
+    request<{ ok: true }>("/account/password", {
+      method: "POST",
+      body: { current, password },
+    }),
+
   threads: () =>
     request<{ conversations: Thread[] }>("/account/conversations"),
 

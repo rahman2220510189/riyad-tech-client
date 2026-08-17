@@ -18,6 +18,32 @@ import { cn } from "@/lib/cn";
 
 const steps = ["new", "accepted", "invoiced", "paid", "delivered"];
 
+/** Sums the "€1,200" strings a price column holds. Returns null when a price
+    cannot be read, rather than quietly reporting a total that is wrong — a
+    figure a buyer checks against their own bank statement has to be right or
+    absent. */
+function totalPaid(orders: Order[]): { amount: string; count: number } | null {
+  const settled = orders.filter(
+    (order) => order.status === "paid" || order.status === "delivered",
+  );
+
+  if (settled.length === 0) return null;
+
+  let sum = 0;
+  for (const order of settled) {
+    const digits = (order.productPrice ?? "").replace(/[^0-9.,]/g, "");
+    /* European format: full stops group thousands, the comma is decimal. */
+    const value = Number(digits.replace(/\./g, "").replace(",", "."));
+    if (!Number.isFinite(value) || value === 0) return null;
+    sum += value;
+  }
+
+  return {
+    amount: `€${sum.toLocaleString("en-IE")}`,
+    count: settled.length,
+  };
+}
+
 const explain: Record<string, string> = {
   new: "We have it. Expect a reply within one working day.",
   accepted: "Scope agreed. An invoice is on its way.",
@@ -65,8 +91,45 @@ export function Orders() {
     );
   }
 
+  const paid = totalPaid(orders);
+
   return (
-    <ul className="space-y-5">
+    <>
+      {/* A short summary above the list: how many, how far along, what has
+          been spent. Answers the three questions somebody opens this page
+          holding, before they read a single card. */}
+      <dl className="mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-rule bg-rule sm:grid-cols-3">
+        <div className="bg-paper-lift bg-none p-5">
+          <dt className="mono-label text-muted">Requests</dt>
+          <dd className="mt-2 font-display text-[1.75rem] font-bold leading-none tracking-[-0.03em]">
+            {orders.length}
+          </dd>
+        </div>
+        <div className="bg-paper-lift bg-none p-5">
+          <dt className="mono-label text-muted">In progress</dt>
+          <dd className="mt-2 font-display text-[1.75rem] font-bold leading-none tracking-[-0.03em]">
+            {
+              orders.filter(
+                (order) =>
+                  order.status !== "delivered" && order.status !== "declined",
+              ).length
+            }
+          </dd>
+        </div>
+        <div className="col-span-2 bg-paper-lift bg-none p-5 sm:col-span-1">
+          <dt className="mono-label text-muted">Paid to date</dt>
+          <dd className="mt-2 font-display text-[1.75rem] font-bold leading-none tracking-[-0.03em]">
+            {paid ? paid.amount : "—"}
+          </dd>
+          {paid && (
+            <p className="caption mt-1.5 text-muted">
+              across {paid.count} {paid.count === 1 ? "system" : "systems"}
+            </p>
+          )}
+        </div>
+      </dl>
+
+      <ul className="space-y-5">
       {orders.map((order) => {
         const current = steps.indexOf(order.status);
         const declined = order.status === "declined";
@@ -113,6 +176,7 @@ export function Orders() {
           </li>
         );
       })}
-    </ul>
+      </ul>
+    </>
   );
 }

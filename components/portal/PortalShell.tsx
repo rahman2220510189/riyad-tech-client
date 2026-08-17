@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ToastProvider } from "@/components/ui/Toast";
 import { PortalAuthProvider, usePortalAuth } from "./PortalAuth";
+import { AccountSettings } from "./AccountSettings";
+import { ForgotForm } from "./ForgotForm";
 import { SignInForm } from "./SignInForm";
 import { Messages } from "./Messages";
 import { Orders } from "./Orders";
@@ -15,12 +17,17 @@ import { cn } from "@/lib/cn";
  * Signed out, this is a sign-in card and nothing else — there is no protected
  * route to forget to protect, because signed out there are no routes at all.
  *
- * Two tabs rather than two pages: on a phone, tabs are one tap and keep the
- * whole thing on one screen.
+ * Three tabs rather than three pages: on a phone, tabs are one tap and keep
+ * the whole thing on one screen.
  */
+
+const tabs = ["orders", "messages", "account"] as const;
+type Tab = (typeof tabs)[number];
+
 function Inner() {
   const { customer, checking, unread, signOut } = usePortalAuth();
-  const [tab, setTab] = useState<"orders" | "messages">("orders");
+  const [tab, setTab] = useState<Tab>("orders");
+  const [forgot, setForgot] = useState(false);
 
   if (checking) {
     return (
@@ -33,7 +40,11 @@ function Inner() {
   if (!customer) {
     return (
       <div className="band wrap">
-        <SignInForm />
+        {forgot ? (
+          <ForgotForm onBack={() => setForgot(false)} />
+        ) : (
+          <SignInForm onForgot={() => setForgot(true)} />
+        )}
       </div>
     );
   }
@@ -52,11 +63,11 @@ function Inner() {
       </div>
 
       <div
-        className="mt-10 flex gap-6 border-b border-rule"
+        className="mt-10 flex gap-6 overflow-x-auto border-b border-rule"
         role="tablist"
         aria-label="Account sections"
       >
-        {(["orders", "messages"] as const).map((name) => (
+        {tabs.map((name) => (
           <button
             key={name}
             type="button"
@@ -64,7 +75,7 @@ function Inner() {
             aria-selected={tab === name}
             onClick={() => setTab(name)}
             className={cn(
-              "-mb-px border-b-2 pb-3 text-[0.9375rem] capitalize transition-colors duration-150",
+              "-mb-px shrink-0 border-b-2 pb-3 text-[0.9375rem] capitalize transition-colors duration-150",
               tab === name
                 ? "border-ink text-ink"
                 : "border-transparent text-ink-soft hover:text-ink",
@@ -78,7 +89,11 @@ function Inner() {
         ))}
       </div>
 
-      <div className="mt-8">{tab === "orders" ? <Orders /> : <Messages />}</div>
+      <div className="mt-8">
+        {tab === "orders" && <Orders />}
+        {tab === "messages" && <Messages />}
+        {tab === "account" && <AccountSettings />}
+      </div>
     </div>
   );
 }

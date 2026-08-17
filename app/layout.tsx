@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Public_Sans, IBM_Plex_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { ChatWidget } from "@/components/ChatWidget";
 import { StructuredData } from "@../../../app/StructuredData";
 import { ToastProvider } from "@/components/ui/Toast";
 import { site } from "@/content/site";
@@ -92,6 +93,7 @@ export default async function RootLayout({
           <Nav />
           <div id="main">{children}</div>
           <Footer settings={content.settings} />
+          <ChatWidget />
         </ToastProvider>
       </body>
     </html>
