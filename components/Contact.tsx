@@ -65,15 +65,18 @@ export function Contact({
                   {settings.email}
                 </a>
               </li>
-              <li className="border-b border-rule py-3">
-                <a
-                  href={settings.linkedin}
-                  rel="noreferrer"
-                  className="mono text-ink transition-colors duration-150 hover:text-depth"
-                >
-                  LinkedIn
-                </a>
-              </li>
+              {settings.linkedin && (
+                <li className="border-b border-rule py-3">
+                  <a
+                    href={settings.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mono text-ink transition-colors duration-150 hover:text-depth"
+                  >
+                    LinkedIn ↗
+                  </a>
+                </li>
+              )}
             </ul>
 
             <p className="mono-label mt-4 text-muted">{settings.responseTime}</p>

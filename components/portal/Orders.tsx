@@ -63,9 +63,7 @@ export function Orders() {
       .catch(() => setOrders([]));
   }, []);
 
-  if (orders === null) {
-    return <p className="mono-label text-muted">Loading…</p>;
-  }
+  if (orders === null) return <Waking />;
 
   if (orders.length === 0) {
     return (
@@ -178,5 +176,33 @@ export function Orders() {
       })}
       </ul>
     </>
+  );
+}
+
+/**
+ * Shown while the first request wakes a sleeping server.
+ *
+ * The second line appears after five seconds. Before that it would be noise;
+ * after it, an unexplained blank screen is what makes someone reload and
+ * decide the site is broken.
+ */
+function Waking() {
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSlow(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div>
+      <p className="mono-label text-muted">Loading…</p>
+      {slow && (
+        <p className="caption measure mt-2 text-muted">
+          The server sleeps when nobody is using it and takes a moment to wake.
+          This only happens on the first request.
+        </p>
+      )}
+    </div>
   );
 }

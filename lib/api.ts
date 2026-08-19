@@ -33,6 +33,44 @@ const cachePolicy: RequestInit["next"] =
     ? { revalidate: 0 }
     : { revalidate: 3600, tags: ["content"] };
 
+/**
+ * A free Render instance stops after fifteen minutes idle and takes thirty to
+ * fifty seconds to wake. The first request after a quiet spell is therefore
+ * slow, not broken — and an eight-second timeout turned that into a page with
+ * no products and no photographs, which is what "sometimes the data is there
+ * and sometimes it is not" actually was.
+ *
+ * So: wait long enough for a cold start, and try again if the first attempt
+ * dies. This runs at build time and on revalidation, never while a visitor
+ * waits, so a slow call costs nothing anyone can see.
+ */
+const COLD_START_MS = 60_000;
+const ATTEMPTS = 3;
+
+async function fetchWithWake(url: string): Promise<Response | null> {
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        next: cachePolicy,
+        signal: AbortSignal.timeout(COLD_START_MS),
+      });
+
+      /* 5xx from a waking instance is worth retrying; 404 is not. */
+      if (response.ok || response.status < 500) return response;
+
+      console.warn(`[content] attempt ${attempt}: API replied ${response.status}`);
+    } catch (error) {
+      console.warn(`[content] attempt ${attempt} failed:`, error);
+    }
+
+    if (attempt < ATTEMPTS) {
+      await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+    }
+  }
+
+  return null;
+}
+
 export type ServiceItem = {
   index: string;
   title: string;
@@ -102,6 +140,8 @@ export type ReviewItem = {
 export type SiteSettings = {
   email: string;
   linkedin: string;
+  instagram: string;
+  facebook: string;
   calUrl: string;
   responseTime: string;
   workingHours: string;
@@ -161,6 +201,9 @@ const fromFile = (): Content => ({
   settings: {
     email: site.contact.email,
     linkedin: site.contact.linkedin,
+    /* No fallback: a social account either exists or the link is hidden. */
+    instagram: "",
+    facebook: "",
     calUrl: site.booking.calUrl,
     responseTime: site.contact.responseTime,
     workingHours: site.team.hours,
@@ -213,13 +256,10 @@ export async function getContent(): Promise<Content> {
   if (!API_URL) return fallback;
 
   try {
-    const response = await fetch(`${API_URL}/api/v1/content`, {
-      next: cachePolicy,
-      signal: AbortSignal.timeout(8000),
-    });
+    const response = await fetchWithWake(`${API_URL}/api/v1/content`);
 
-    if (!response.ok) {
-      console.warn(`[content] API replied ${response.status}, using site.ts`);
+    if (!response || !response.ok) {
+      console.warn("[content] could not reach the API, using site.ts");
       return fallback;
     }
 
@@ -283,6 +323,8 @@ export async function getContent(): Promise<Content> {
       settings: {
         email: settings.contact_email || fallback.settings.email,
         linkedin: settings.linkedin_url || fallback.settings.linkedin,
+        instagram: settings.instagram_url ?? "",
+        facebook: settings.facebook_url ?? "",
         calUrl: settings.cal_url ?? "",
         responseTime:
           settings.response_time || fallback.settings.responseTime,
@@ -309,12 +351,9 @@ export async function getProduct(slug: string): Promise<Product | null> {
   if (!API_URL) return null;
 
   try {
-    const response = await fetch(`${API_URL}/api/v1/products/${slug}`, {
-      next: cachePolicy,
-      signal: AbortSignal.timeout(8000),
-    });
+    const response = await fetchWithWake(`${API_URL}/api/v1/products/${slug}`);
 
-    if (!response.ok) return null;
+    if (!response || !response.ok) return null;
 
     const data = (await response.json()) as { product: Product };
     return data.product ?? null;

@@ -50,16 +50,26 @@ export function Footer({ settings }: { settings: SiteSettings }) {
                   {settings.email}
                 </a>
               </li>
-              <li>
-                <a
-                  href={settings.linkedin}
-                  rel="noreferrer"
-                  className="text-[0.9375rem] text-paper/80 transition-colors duration-150 hover:text-marker"
-                >
-                  LinkedIn
-                </a>
-              </li>
             </ul>
+
+            {/* Each link appears only when there is an account behind it. An
+                icon that goes nowhere is worse than one column fewer. */}
+            {(settings.linkedin || settings.instagram || settings.facebook) && (
+              <>
+                <p className="mono-label mt-7 text-paper/55">Follow</p>
+                <ul className="mt-4 space-y-2.5">
+                  {settings.linkedin && (
+                    <Social href={settings.linkedin} label="LinkedIn" />
+                  )}
+                  {settings.instagram && (
+                    <Social href={settings.instagram} label="Instagram" />
+                  )}
+                  {settings.facebook && (
+                    <Social href={settings.facebook} label="Facebook" />
+                  )}
+                </ul>
+              </>
+            )}
           </div>
         </div>
 
@@ -68,5 +78,27 @@ export function Footer({ settings }: { settings: SiteSettings }) {
         </p>
       </div>
     </footer>
+  );
+}
+
+function Social({ href, label }: { href: string; label: string }) {
+  return (
+    <li>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="group inline-flex items-center gap-1.5 text-[0.9375rem] text-paper/80 transition-colors duration-150 hover:text-marker"
+      >
+        {label}
+        <span
+          aria-hidden="true"
+          className="transition-transform duration-150 group-hover:translate-x-0.5"
+        >
+          ↗
+        </span>
+        <span className="sr-only">, opens in a new tab</span>
+      </a>
+    </li>
   );
 }

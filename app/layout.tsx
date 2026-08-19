@@ -41,7 +41,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.meta.url),
+  /* The deployed address wins, so a preview build does not advertise the
+     production domain in its own metadata. */
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || site.meta.url),
   title: site.meta.title,
   description: site.meta.description,
   alternates: { canonical: "/" },

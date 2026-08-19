@@ -12,7 +12,9 @@ export const site = {
     title: "Riyad Tech — AI document automation for European companies",
     description:
       "A small engineering studio in Dhaka. We build AI systems that read your documents, pull out the data, and put it where it belongs. First working version in two weeks.",
-    url: "https://riyad.tech",
+/* Overridden by NEXT_PUBLIC_SITE_URL wherever it is set. This is the
+       fallback for a local build, and the domain we actually own. */
+    url: "https://riyadtech.xyz",
   },
 
   nav: {
@@ -315,8 +317,10 @@ export const site = {
 
   /* TODO before launch: replace with the real address and profile. */
   contact: {
-    email: "hello@riyad.tech",
-    linkedin: "https://www.linkedin.com/company/riyad-tech",
+    /* Fallback only — the live address is edited in the admin panel under
+       Settings, and this is what shows if the API cannot be reached. */
+    email: "hello.riyadtech@gmail.com",
+    linkedin: "https://www.linkedin.com/company/riyad-tech/",
     responseTime: "Usually within one working day",
   },
 

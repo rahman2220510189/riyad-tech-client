@@ -35,7 +35,14 @@ export function Messages() {
   useEffect(loadThreads, [loadThreads]);
 
   if (threads === null) {
-    return <p className="mono-label text-muted">Loading…</p>;
+    return (
+      <div>
+        <p className="mono-label text-muted">Loading…</p>
+        <p className="caption measure mt-2 text-muted">
+          The server sleeps when idle and takes a moment to wake.
+        </p>
+      </div>
+    );
   }
 
   return (

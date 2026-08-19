@@ -37,6 +37,10 @@ export function ProductRequestForm({ slug }: { slug: string }) {
         {
           method: "POST",
           headers: { "content-type": "application/json" },
+          /* The API sleeps on a free instance and can take most of a minute to
+             wake. A short timeout would tell someone the form is broken when
+             it is only cold. */
+          signal: AbortSignal.timeout(60_000),
           body: JSON.stringify({ ...payload, slug }),
         },
       );

@@ -88,6 +88,10 @@ export function ChatWidget() {
         {
           method: "POST",
           headers: { "content-type": "application/json" },
+          /* The first question after a quiet spell wakes the server, which
+             takes most of a minute. Better a slow answer than a wrong claim
+             that something went wrong. */
+          signal: AbortSignal.timeout(60_000),
           body: JSON.stringify({
             message: question,
             /* The opening line is ours, not a real exchange, so it is dropped

@@ -33,6 +33,10 @@ function Inner() {
     return (
       <div className="band wrap">
         <p className="mono-label text-muted">Loading…</p>
+        <p className="caption measure mt-2 text-muted">
+          The server sleeps when nobody is using it. The first request takes a
+          moment.
+        </p>
       </div>
     );
   }

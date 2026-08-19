@@ -34,7 +34,11 @@ export function StructuredData({ settings }: { settings: SiteSettings }) {
       "AI integration",
       "Custom web applications",
     ],
-    sameAs: [settings.linkedin].filter(Boolean),
+    /* sameAs is how a search engine ties this page to the same company's
+       social profiles. Empty strings are dropped rather than published. */
+    sameAs: [settings.linkedin, settings.instagram, settings.facebook].filter(
+      Boolean,
+    ),
   };
 
   return (

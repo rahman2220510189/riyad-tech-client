@@ -23,18 +23,45 @@ export class PortalError extends Error {
   }
 }
 
+/**
+ * The API sleeps on a free instance and takes up to a minute to wake, so the
+ * first request after a quiet spell is slow rather than broken. A short
+ * timeout here reads as "the portal is down" to someone who only needed to
+ * wait — so this waits, and retries once if the connection drops outright.
+ *
+ * A failed request is retried only when nothing was sent: a POST that timed
+ * out may well have been received, and sending a message twice is worse than
+ * an error.
+ */
+const TIMEOUT_MS = 60_000;
+
 async function request<T>(
   path: string,
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
-  const response = await fetch(`${BASE}/api/v1${path}`, {
-    method: options.method ?? "GET",
-    /* Without this the session cookie is never sent and every call comes back
-       401 with nothing to explain why. */
-    credentials: "include",
-    headers: { "content-type": "application/json" },
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
-  });
+  const method = options.method ?? "GET";
+
+  const send = () =>
+    fetch(`${BASE}/api/v1${path}`, {
+      method,
+      /* Without this the session cookie is never sent and every call comes
+         back 401 with nothing to explain why. */
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body:
+        options.body === undefined ? undefined : JSON.stringify(options.body),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+
+  let response: Response;
+
+  try {
+    response = await send();
+  } catch (error) {
+    if (method !== "GET") throw error;
+    /* Safe to repeat: a GET changes nothing. */
+    response = await send();
+  }
 
   const data = await response.json().catch(() => ({}));
 
