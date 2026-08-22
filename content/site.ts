@@ -22,6 +22,8 @@ export const site = {
     links: [
       { label: "Home", href: "/" },
       { label: "Services", href: "/services" },
+      { label: "For agencies", href: "/agencies" },
+
       { label: "Products", href: "/products" },
       { label: "Work", href: "/work" },
       { label: "Pricing", href: "/pricing" },
@@ -513,6 +515,8 @@ export const site = {
         links: [
           { label: "Home", href: "/" },
           { label: "Services", href: "/services" },
+          { label: "For agencies", href: "/agencies" },
+
           { label: "Products", href: "/products" },
           { label: "Work", href: "/work" },
           { label: "Pricing", href: "/pricing" },
@@ -539,6 +543,163 @@ export const site = {
     location: "Dhaka, Bangladesh",
     /* The year is appended at build time, so this line never goes stale. */
     bottom: "Riyad Tech · Dhaka, Bangladesh",
+  },
+
+    /* The /agencies page, for European agency owners considering white-label
+     capacity. He is not evaluating whether we can code — he assumes we can.
+     He is evaluating whether we will steal his clients, embarrass him in
+     front of one, and whether the margin works, in that order. Every
+     section below answers one of those and stops. */
+  agencies: {
+    meta: {
+      title: "For agencies — Riyad Tech",
+      description:
+        "White-label engineering for European agencies. Web builds, maintenance, and dedicated developers. Your brand, your client, our build.",
+    },
+
+    hero: {
+      eyebrow: "For European agencies",
+      headline: {
+        line1: "You win the work.",
+        line2Lead: "We ",
+        marked: "build",
+        line2Tail: " it.",
+      },
+      bodyLead: "Riyad Tech is a ",
+      bodyTail:
+        "-person engineering studio in Dhaka that works white-label for European agencies. Web builds, internal tools, AI features, and developers who join your team by the month. Everything ships under your brand.",
+      primary: { label: "Book a 15-min call", href: "/contact" },
+      secondary: { label: "See rates", href: "#offerings" },
+      assurance: "14:00–22:00 Dhaka = 09:00–17:00 CET. Same-day answers.",
+    },
+
+    /* Fallback only when the API cannot be reached. The real numbers live in
+       Settings in the admin panel, so team size and rates never drift from
+       what is actually true — see the note in lib/api.ts. */
+    rates: {
+      teamSizeFallback: "six",
+      projectFallback: "€1,200–3,000 per project",
+      maintenanceFallback: "€150–400 per site, monthly",
+      developerFallback: "€2,000–3,500 per developer, monthly",
+    },
+
+    promises: {
+      eyebrow: "How we work with you",
+      heading: "Four things we commit to.",
+      items: [
+        "We never contact your clients. Not during a project, not after.",
+        "Your projects never appear in our portfolio or case studies.",
+        "Everything ships under your brand. Your client never hears our name.",
+        "NDA signed before the first project, no negotiation needed.",
+      ],
+      footnote:
+        "These are contract terms, not aspirations. Ask and we will send the template.",
+    },
+
+    offerings: {
+      eyebrow: "What we take on",
+      heading: "Four ways to use us.",
+      footnote:
+        "Rates are for agency work and already account for the fact that you carry the client relationship.",
+      items: [
+        {
+          index: "01",
+          title: "Project build",
+          body: "You scope it with your client, we build it. Fixed price agreed before we start, and it does not move.",
+          priceFallback: "€1,200–3,000 per project",
+          priceSettingKey: "agencyRateProject",
+          examples: ["Marketing sites", "Web apps", "Dashboards"],
+          href: null,
+        },
+        {
+          index: "02",
+          title: "Maintenance",
+          body: "We keep sites and apps running after launch so your team is not pulled back into finished work.",
+          priceFallback: "€150–400 per site, monthly",
+          priceSettingKey: "agencyRateMaintenance",
+          examples: ["Hosting", "Updates and backups", "Small changes"],
+          href: null,
+        },
+        {
+          index: "03",
+          title: "Dedicated developer",
+          body: "One of our engineers joins your team for the month. Your standups, your tools, your process.",
+          priceFallback: "€2,000–3,500 per developer, monthly",
+          priceSettingKey: "agencyRateDeveloper",
+          examples: ["Full-stack", "Backend", "AI/ML"],
+          href: null,
+        },
+        {
+          index: "04",
+          title: "Ready-made products",
+          body: "Working products you can rebrand and sell to your clients instead of quoting a build from scratch.",
+          priceFallback: "Licensing discussed per product",
+          priceSettingKey: null,
+          examples: ["Rebranded as yours", "Deployed on your infra", "We maintain it"],
+          href: "/products",
+        },
+      ],
+    },
+
+    projectSteps: {
+      eyebrow: "How a project runs",
+      heading: "You stay in front. We stay behind.",
+      steps: [
+        {
+          index: "01",
+          title: "You scope it",
+          body: "You talk to your client and agree what is being built. We join that call only if you want us to, on your domain, with your email address.",
+        },
+        {
+          index: "02",
+          title: "We quote",
+          body: "Fixed price and a delivery date, usually within one working day. No hourly estimates that drift.",
+        },
+        {
+          index: "03",
+          title: "We build",
+          body: "Daily updates in your Slack or Notion. You see progress while it happens, not at the end.",
+        },
+        {
+          index: "04",
+          title: "You deliver",
+          body: "You hand it to your client under your brand. We are available for fixes and for whatever comes next.",
+        },
+      ],
+    },
+
+    questions: {
+      eyebrow: "The obvious questions",
+      heading: "The things you are actually worried about.",
+      items: [
+        {
+          q: "What happens if you disappear?",
+          a: "You hold the repository from day one. Every commit lands in your GitHub, not ours. If we vanish tomorrow, any competent developer opens the repo and continues — nothing is stored anywhere you cannot reach.",
+        },
+        {
+          q: "What if the quality is wrong?",
+          a: "Start with one small paid project before anything else. Two weeks, one deliverable, real work for a real client of yours. If it is not what you wanted, you have spent very little and learned everything you need to know.",
+        },
+        {
+          q: "Who actually writes the code?",
+          a: "The person on your first call. We are six people and we do not subcontract, so the engineer you speak to is the one committing. If we ever cannot staff something ourselves, we will tell you rather than quietly hand it to someone else.",
+        },
+        {
+          q: "How is the English?",
+          a: "All written communication is in English and all our documentation is in English. Calls are in English. You will not need to simplify anything.",
+        },
+        {
+          q: "What about my client's data under GDPR?",
+          a: "Processing runs on EU-hosted infrastructure. We sign a DPA before any data is exchanged, and we delete everything on request. If your client asks where their data is, you have a straight answer.",
+        },
+      ],
+    },
+
+    closing: {
+      eyebrow: "Next step",
+      heading: "Try us on one small thing.",
+      body: "Fifteen minutes, no deck. Tell us what is sitting in your backlog and we will tell you what it would cost and how long it would take. If it is not a good fit, we will say so on the call.",
+    },
   },
 } as const;
 

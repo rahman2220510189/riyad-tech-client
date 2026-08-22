@@ -20,9 +20,15 @@ import type { SiteSettings } from "@/lib/api";
 export function Contact({
   settings,
   headingLevel = 2,
+  eyebrow,
+  heading,
+  sub,
 }: {
   settings: SiteSettings;
   headingLevel?: 1 | 2 | 3;
+  eyebrow?: string;
+  heading?: string;
+  sub?: string;
 }) {
   const { booking } = site;
   const hasCalendar = Boolean(settings.calUrl);
@@ -31,9 +37,9 @@ export function Contact({
     <>
       <Section
         id="contact"
-        eyebrow={booking.eyebrow}
-        heading={booking.heading}
-        sub={booking.sub}
+        eyebrow={eyebrow ?? booking.eyebrow}
+        heading={heading ?? booking.heading}
+        sub={sub ?? booking.sub}
         headingLevel={headingLevel}
         ruled={headingLevel === 2}
       >

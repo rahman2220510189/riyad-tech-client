@@ -146,6 +146,10 @@ export type SiteSettings = {
   responseTime: string;
   workingHours: string;
   location: string;
+  agencyTeamSize: string;
+  agencyRateProject: string;
+  agencyRateMaintenance: string;
+  agencyRateDeveloper: string;
 };
 
 export type Content = {
@@ -201,13 +205,16 @@ const fromFile = (): Content => ({
   settings: {
     email: site.contact.email,
     linkedin: site.contact.linkedin,
-    /* No fallback: a social account either exists or the link is hidden. */
     instagram: "",
     facebook: "",
     calUrl: site.booking.calUrl,
     responseTime: site.contact.responseTime,
     workingHours: site.team.hours,
     location: site.footer.location,
+    agencyTeamSize: site.agencies.rates.teamSizeFallback,
+    agencyRateProject: site.agencies.rates.projectFallback,
+    agencyRateMaintenance: site.agencies.rates.maintenanceFallback,
+    agencyRateDeveloper: site.agencies.rates.developerFallback,
   },
   live: false,
 });
@@ -320,7 +327,7 @@ export async function getContent(): Promise<Content> {
       /* No fallback. Reviews are either real and approved, or absent. */
       reviews: data.reviews ?? [],
 
-      settings: {
+         settings: {
         email: settings.contact_email || fallback.settings.email,
         linkedin: settings.linkedin_url || fallback.settings.linkedin,
         instagram: settings.instagram_url ?? "",
@@ -331,6 +338,16 @@ export async function getContent(): Promise<Content> {
         workingHours:
           settings.working_hours || fallback.settings.workingHours,
         location: settings.location || fallback.settings.location,
+        agencyTeamSize:
+          settings.agency_team_size || fallback.settings.agencyTeamSize,
+        agencyRateProject:
+          settings.agency_rate_project || fallback.settings.agencyRateProject,
+        agencyRateMaintenance:
+          settings.agency_rate_maintenance ||
+          fallback.settings.agencyRateMaintenance,
+        agencyRateDeveloper:
+          settings.agency_rate_developer ||
+          fallback.settings.agencyRateDeveloper,
       },
 
       live: true,
